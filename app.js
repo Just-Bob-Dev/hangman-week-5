@@ -2,11 +2,14 @@ const express = require('express')
 var parseurl = require('parseurl')
 var session = require('express-session')
 var fs = require('fs')
+var mustacheExpress = require('mustache-express');
 var words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 
-function wordToArray(string){
+function wordToObjArr(string){
   let stringArr = string.split('');
-  console.log(stringArr);
+  for(let i = 0; i< stringArr.length; i++){
+    stringArr[0] ={''+i+'': stringArr[i]};
+  }
   return stringArr;
 }
 
@@ -16,10 +19,14 @@ function pickWord(){
   return chosenWord;
 }
 
-
-
 var app = express()
 //initializes session and makes it so it can be referenced later on in the .js file.
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.engine('mustache', mustacheExpress());
+app.set('views', './views');
+app.set('view engine', 'mustache');
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -27,6 +34,7 @@ app.use(session({
 }))
 
 app.use(function (req, res, next) {
+
   var views = req.session.views
 //checks to see if there are any views and if not sets the base amount.
   if (!views) {
@@ -43,7 +51,7 @@ app.use(function (req, res, next) {
 app.get('/', function(req, res, next){
   let newWord = pickWord();
   console.log(newWord);
-  wordToArray(newWord);
+  wordToObjArr(newWord);
 
   res.send('This is your special word: ' + " " + newWord + " ");
 })
