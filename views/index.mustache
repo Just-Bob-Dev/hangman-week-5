@@ -5,16 +5,24 @@
     <title>Hangman</title>
   </head>
   <body>
+
+    <ul  class='wordContainer'>
+      {{#stringArr}}
+      <li>{{letter}}</li>
+      {{/stringArr}}
+    </ul >
     <form action="/" method="post">
-      <ul class='wordContainer'>
-        <li>{{word}}</li>
-      </ul>
-      <input type="text" class='guessArea' name="guess" placeholder="Make a guess">
-      <button type="submit" name="guess-button">guess</button>
-      <ul>
-        <p>Previous Guesses</p>
-        <li>{{failed-guesses}}</li>
-      </ul>
+      <p>Make a Guess</p>
+
+      <input type="text" class='guessArea' name="guessInput" value="" placeholder="Make a guess"/>
+
+      <button type="submit">guess</button>
     </form>
+    <ul>
+      <p>Previous Guesses</p>
+      {{#failedGuess}}
+      <li>{{letter}}</li>
+      {{/failedGuess}}
+    </ul>
   </body>
 </html>

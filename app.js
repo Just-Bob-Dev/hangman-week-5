@@ -1,16 +1,23 @@
 const express = require('express')
-var parseurl = require('parseurl')
-var session = require('express-session')
-var fs = require('fs')
+const parseurl = require('parseurl')
+const session = require('express-session')
+const fs = require('fs')
+const bodyParser = require('body-parser');
 var mustacheExpress = require('mustache-express');
 var words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 
 function wordToObjArr(string){
   let stringArr = string.split('');
   for(let i = 0; i< stringArr.length; i++){
-    stringArr[0] ={''+i+'': stringArr[i]};
+    let c = ''+ stringArr[i];
+    stringArr[i] ={ 'letter' : c};
   }
-  return stringArr;
+  return {stringArr};
+}
+
+function letterToObj(string){
+  let str = {'letter': string};
+  return str;
 }
 
 function pickWord(){
@@ -48,14 +55,33 @@ app.use(function (req, res, next) {
   next()
 })
 
-app.get('/', function(req, res, next){
-  let newWord = pickWord();
-  console.log(newWord);
-  wordToObjArr(newWord);
+let newWord = pickWord();
+let guessArray = '';
+let guessArr = wordToObjArr(guessArray);
 
-  res.send('This is your special word: ' + " " + newWord + " ");
+
+app.get('/', function(req, res, next){
+  // let newWord = pickWord();
+  console.log(newWord);
+  let objNewWord = wordToObjArr(newWord);
+  console.log(objNewWord);
+  res.render('index', { stringArr: objNewWord.stringArr,
+  failedGuess: guessArr.stringArr });
+
+  // res.send('This is your special word: ' + " " + newWord + " " );
+})
+
+app.post('/', function(req, res, next){
+  guessArray = guessArray + req.body.guessInput;
+  let guess = wordToObjArr(guessArray);
+  guessArr = guess;
+  console.log('Guess: ' +req.body.guessInput + " This is the current guess String: " + guess);
+  console.log(guess);
+  console.log(guessArray);
+
+  res.redirect('/');
 })
 
 app.listen(3000, function(req, res){
-  console.log('looks like you made it after all.')
+  console.log('looks like you made it after all.');
 })
