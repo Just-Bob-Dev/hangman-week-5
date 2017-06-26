@@ -5,12 +5,23 @@
     <title>Hangman</title>
   </head>
   <body>
+    <h1>Hutch's Hangman</h1>
+    <h3>Hello, welcome to Hutch's Hangman. There are only a couple of rules so let's go over them now. Please only enter one letter at a time. If you enter more than one letter, don't worry you will simply get a response to change your guess. You have 8 chances to get the correct word. Correct guesses will not be counted toward your overall guess count. Be wary if you do not get the correct word you will kill hangin Harol. Good luck an my fortune favor you.</h3>
 
-    <ul  class='wordContainer'>
-      {{#stringArr}}
-      <li>{{letter}}</li>
-      {{/stringArr}}
-    </ul >
+    <table class='wordContainer'>
+      <tbody>
+        <tr>
+          {{#stringArr}}
+          <td>{{letter}}</td>
+          {{/stringArr}}
+        </tr>
+        <tr>
+          {{#stringArr}}
+          <td>{{letterGuess}}</td>
+          {{/stringArr}}
+        </tr>
+      </tbody>
+    </table >
     <form action="/" method="post">
       <p>Make a Guess</p>
 
