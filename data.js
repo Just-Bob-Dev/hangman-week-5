@@ -80,9 +80,10 @@ function checkLetter(req, string, wordArray, failedGuessString){
   return req.session
 }
 
-function gameStatus(array){
+//check status of game to display either win or lose information.
+function gameStatus(req, array){
   let status = array.length;
-  if(status == 8){
+  if(status === 8){
     req.session.gameStatus = true;
   }
   else{
@@ -97,5 +98,6 @@ module.exports = {
   strObjArr: wordToObjArr,
   lettToObj: letterToObj,
   checkLetter: checkLetter,
-  getDiff: getDifficulty
+  getDiff: getDifficulty,
+  gameStat: gameStatus
 }

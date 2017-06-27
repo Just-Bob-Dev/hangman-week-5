@@ -18,6 +18,7 @@ app.engine('mustache', mustacheExpress());
 app.set('views', './views');
 app.set('view engine', 'mustache');
 
+app.use(express.static('./public'));
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -40,54 +41,71 @@ app.use(session({
 // })
 var newWord = '';
 let guessString = '';
+var guessLeft = 8;
 let guessArr = data.lettToObj(guessString);
 
 //Welcome Page
 app.get('/', function(req,res){
+  guessString = '';
   res.render('welcome')
 });
 
 //Selection of difficulty and word length
 app.post('/', function(req,res){
     let difficulty = req.body.difficulty;
-    console.log("difficulty: " + difficulty);
+    // console.log("difficulty: " + difficulty);
     newWord = data.getDiff(difficulty);
-    console.log('typeof newWord: ')
-    console.log(typeof newWord);
+    // console.log('typeof newWord: ')
+    // console.log(typeof newWord);
     res.redirect('/hangman');
 });
 //Hangman Game.
 app.get('/hangman', function(req, res, next){
   // let newWord = pickWord();
-  console.log('newWord: ')
-  console.log(newWord);
-  console.log('guessArr: ')
-  console.log(guessArr)
+  // console.log('newWord: ')
+  // console.log(newWord);
+  // console.log('guessArr: ')
+  // console.log(guessArr)
+  guessLeft = 8 - guessArr.str.length;
+  console.log('guessLeft: ' + guessLeft + " minus " +guessArr.str.length);
   res.render('index', { stringArr: newWord.stringArr,
-  failedGuess: guessArr.str });
+  failedGuess: guessArr.str,
+  guessesLeft: guessLeft});
   // res.send('This is your special word: ' + " " + newWord + " " );
 });
 //Hangman Post
 app.post('/hangman', function(req, res, next){
   let guess = req.body.guessInput;
   let check = data.checkLetter(req, guess, newWord, guessString);
-  console.log("req.session: ");
+  let status = data.gameStat(req, guessArr.str);
   console.log(req.session);
-  console.log("newWord.stringArr.length");
-  console.log(newWord.stringArr.length);
-  if (req.session.failed){
-    guessString = guessString + guess;
-    guessArr = data.lettToObj(guessString);
+  if(req.session.gameStatus == true){
+    res.redirect('/hangman/youlose');
   }
-  console.log('Guess: ' +req.body.guessInput + " This is the current guess String: " + guess);
-  console.log(guessString);
-  console.log("your in post" +newWord);
-  res.redirect('/hangman');
+  else{
+    // console.log("req.session: ");
+    // console.log(req.session);
+    // console.log("newWord.stringArr.length");
+    // console.log(newWord.stringArr.length);
+    if (req.session.failed){
+      guessString = guessString + guess;
+      guessArr = data.lettToObj(guessString);
+    }
+    // console.log('Guess: ' +req.body.guessInput + " This is the current guess String: " + guess);
+    // console.log(guessString);
+    // console.log("your in post" +newWord);
+    res.redirect('/hangman');
+  }
 });
 
 app.get('/hangman/youlose', function(req, res){
   res.render('youlose');
-})
+});
+
+app.post('/hangman/youlose', function(req, res){
+  req.session.destroy();
+  res.redirect('/');
+});
 
 app.listen(3000, function(req, res){
   console.log('looks like you made it after all.');
