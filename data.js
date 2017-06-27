@@ -18,10 +18,32 @@ function wordToObjArr(string){
 }
 
 //Pulls from Mac dictionary and then turns said word into and object array to be displayed on web page.
-function pickWord(){
-  var chosenWordIndex = Math.floor(Math.random()*words.length);
-  var chosenWord = words[chosenWordIndex];
+function pickWord(lowerInt, highInt){
+  let correctDifficulty = false;
+  let chosenWord = "";
+  console.log(lowerInt + " " + highInt)
+  while(correctDifficulty != true ){
+    let chosenWordIndex = Math.floor(Math.random()*words.length);
+    chosenWord = words[chosenWordIndex];
+    if(chosenWord.length >= lowerInt && chosenWord.length <= highInt){
+      correctDifficulty = true;
+    }
+    console.log(chosenWord);
+  }
   return wordToObjArr(chosenWord);
+}
+
+//checks difficulty and picks word
+function getDifficulty(string){
+  if(string === 'easy'){
+    return pickWord(4, 6);
+  }
+  else if (string === 'normal') {
+    return pickWord(6, 8);
+  }
+  else if (string === 'hard'){
+    return pickWord(8, 100);
+  }
 }
 
 //Turns a guess into an object
@@ -59,12 +81,10 @@ function checkLetter(req, string, wordArray, failedGuessString){
 }
 
 
-
-
-
 module.exports = {
   pWord: pickWord,
   strObjArr: wordToObjArr,
   lettToObj: letterToObj,
-  checkLetter: checkLetter
+  checkLetter: checkLetter,
+  getDiff: getDifficulty
 }

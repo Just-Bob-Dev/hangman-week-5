@@ -38,22 +38,34 @@ app.use(session({
 //
 //   next()
 // })
-
-let newWord = data.pWord();
+var newWord = '';
 let guessString = '';
 let guessArr = data.lettToObj(guessString);
 
+//Welcome Page
+app.get('/', function(req,res){
+  res.render('welcome')
+});
 
-app.get('/', function(req, res, next){
+//Selection of difficulty and word length
+app.post('/', function(req,res){
+    let difficulty = req.body.difficulty;
+    console.log("" + difficulty);
+    newWord = data.getDiff(difficulty);
+    console.log(typeof newWord);
+    res.redirect('/hangman');
+});
+
+app.get('/hangman', function(req, res, next){
   // let newWord = pickWord();
-  console.log(newWord);
+  console.log("your in app.get "+newWord);
   console.log(guessArr)
   res.render('index', { stringArr: newWord.stringArr,
   failedGuess: guessArr.str });
   // res.send('This is your special word: ' + " " + newWord + " " );
-})
+});
 
-app.post('/', function(req, res, next){
+app.post('/hangman', function(req, res, next){
   let guess = req.body.guessInput;
   let check = data.checkLetter(req, guess, newWord, guessString);
   console.log(req.session);
@@ -64,7 +76,8 @@ app.post('/', function(req, res, next){
   }
   console.log('Guess: ' +req.body.guessInput + " This is the current guess String: " + guess);
   console.log(guessString);
-  res.redirect('/');
+  console.log("your in post" +newWord);
+  res.redirect('/hangman');
 })
 
 app.listen(3000, function(req, res){
