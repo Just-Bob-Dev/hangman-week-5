@@ -47,6 +47,7 @@ let guessArr = data.lettToObj(guessString);
 //Welcome Page
 app.get('/', function(req,res){
   guessString = '';
+  guessArr = data.lettToObj(guessString);
   res.render('welcome')
 });
 
