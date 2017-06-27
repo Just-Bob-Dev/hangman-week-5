@@ -28,7 +28,7 @@ function pickWord(lowerInt, highInt){
     if(chosenWord.length >= lowerInt && chosenWord.length <= highInt){
       correctDifficulty = true;
     }
-    console.log(chosenWord);
+    console.log("possible word: " + chosenWord);
   }
   return wordToObjArr(chosenWord);
 }
@@ -78,6 +78,17 @@ function checkLetter(req, string, wordArray, failedGuessString){
   }
   console.log("The count is: " + count);
   return req.session
+}
+
+function gameStatus(array){
+  let status = array.length;
+  if(status == 8){
+    req.session.gameStatus = true;
+  }
+  else{
+    req.session.gameStatus = false;
+  }
+  return req.session;
 }
 
 
