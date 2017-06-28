@@ -3,6 +3,7 @@ const parseurl = require('parseurl')
 const session = require('express-session')
 const fs = require('fs')
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
 const data = require('./data.js')
 var mustacheExpress = require('mustache-express');
 var words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
@@ -14,6 +15,8 @@ var app = express()
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+// app.use(expressValidator([options]));
+
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
 app.set('view engine', 'mustache');
@@ -77,6 +80,8 @@ app.get('/hangman', function(req, res, next){
 //Hangman Post
 app.post('/hangman', function(req, res, next){
   let guess = req.body.guessInput;
+  // req.check(guess, 'Error Message').notEmpty().isInt(1);
+
   let check = data.checkLetter(req, guess, newWord, guessString);
   let status = data.gameStat(req, guessArr.str);
   console.log(req.session);
