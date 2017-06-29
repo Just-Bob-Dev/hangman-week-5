@@ -3,7 +3,7 @@ body {
  background: -webkit-linear-gradient(left top, #1CBDB4, #37B9E9);  /*For Safari 5.1 to 6.0 */
  background: -o-linear-gradient(bottom right, #1CBDB4, #37B9E9); /* For Opera 11.1 to 12.0 */
  background: -moz-linear-gradient(bottom right, #1CBDB4, #37B9E9); /* For Firefox 3.6 to 15 */
- /*background: linear-gradient(to bottom right, #1CBDB4, #37B9E9); /* Standard syntax */*/
+ /*background: linear-gradient(to bottom right, #1CBDB4, #37B9E9); /* Standard syntax */
 }
   /*background-color: linear-gradient(to right, #1CBDB4, #37B9E9)*/
   /*background-color: red;*/
@@ -13,9 +13,9 @@ body {
   width: 80%;
   margin-left: auto;
   margin-right: auto;
-  /*background-image: url('../images/cloud-background.jpeg');
+  /*background-image: url('./images/cloud-background.jpeg');*/
   background-repeat: no-repeat;
-  background-size: cover;*/
+  background-size: cover;
 }
 
 .headline {

@@ -80,7 +80,7 @@ function checkLetter(req, string, wordArray, failedGuessString){
   return req.session
 }
 
-//check status of game to display either win or lose information.
+//check status of game to display either lose information.
 function gameStatus(req, array){
   let status = array.length;
   if(status === 8){
