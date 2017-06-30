@@ -8,14 +8,12 @@ const data = require('./data.js')
 var mustacheExpress = require('mustache-express');
 var words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 
-
-
 var app = express()
 //initializes session and makes it so it can be referenced later on in the .js file.
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-// app.use(expressValidator([options]));
+app.use(expressValidator());
 
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
@@ -28,28 +26,18 @@ app.use(session({
   saveUninitialized: true
 }))
 
-// app.use(function (req, res, next) {
-//
-//   var views = req.session.views
-// //checks to see if there are any views and if not sets the base amount.
-//   if (!views) {
-//     views = req.session.views = {}
-//   }
-//   // get the url pathname
-//   var pathname = parseurl(req).pathname
-//   // count the views
-//   views[pathname] = (views[pathname] || 0) + 1
-//
-//   next()
-// })
+
 var newWord = '';
 let guessString = '';
+let failedGuesses = '';
 var guessLeft = 8;
 let guessArr = data.lettToObj(guessString);
 
 //Welcome Page
 app.get('/', function(req,res){
   guessString = '';
+  failedGuesses = '';
+  req.session.destroy();
   guessArr = data.lettToObj(guessString);
   res.render('welcome')
 });
@@ -57,59 +45,72 @@ app.get('/', function(req,res){
 //Selection of difficulty and word length
 app.post('/', function(req,res){
     let difficulty = req.body.difficulty;
-    // console.log("difficulty: " + difficulty);
-    newWord = data.getDiff(difficulty);
-    // console.log('typeof newWord: ')
-    // console.log(typeof newWord);
+    req.session.newWord = data.getDiff(difficulty);
+    newWord = req.session.newWord;
     res.redirect('/hangman');
 });
+
 //Hangman Game.
 app.get('/hangman', function(req, res, next){
-  // let newWord = pickWord();
-  // console.log('newWord: ')
-  // console.log(newWord);
-  // console.log('guessArr: ')
-  // console.log(guessArr)
-  guessLeft = 8 - guessArr.str.length;
-  console.log('guessLeft: ' + guessLeft + " minus " +guessArr.str.length);
-  res.render('index', { stringArr: newWord.stringArr,
+  guessLeft = 8 - failedGuesses.length;
+  console.log("you have: " +guessLeft +" guesses left."  )
+  console.log(newWord);
+  res.render('index', { stringArr: req.session.newWord.stringArr,
   failedGuess: guessArr.str,
   guessesLeft: guessLeft});
-  // res.send('This is your special word: ' + " " + newWord + " " );
 });
+
 //Hangman Post
 app.post('/hangman', function(req, res, next){
-  let guess = req.body.guessInput;
-  // req.check(guess, 'Error Message').notEmpty().isInt(1);
-
-  let check = data.checkLetter(req, guess, newWord, guessString);
-  let status = data.gameStat(req, guessArr.str);
-  console.log(req.session);
-  if(req.session.gameStatus == true){
-    res.redirect('/hangman/youlose');
+  let guess = req.body.guessInput.toLowerCase();
+  req.checkBody('guessInput', "Sorry you need to only enter one letter").isLength({min:1, max:1}).isAlpha();
+  let guessBool = data.isNewLetter(guess, guessString);
+  var errors = req.validationErrors();
+  if(errors || guessBool){
+    // res.send('Im sorry your guess was invalid please try again.')
+    res.redirect('/hangman');
   }
   else{
-    // console.log("req.session: ");
+    guessString += guess;
+    let check = data.checkLetter(req, guess, req.session.newWord);
+    let status = data.gameStat(req, failedGuesses);
     // console.log(req.session);
-    // console.log("newWord.stringArr.length");
-    // console.log(newWord.stringArr.length);
-    if (req.session.failed){
-      guessString = guessString + guess;
-      guessArr = data.lettToObj(guessString);
+    if(req.session.youWon){
+      res.redirect('/hangman/youWon');
     }
-    // console.log('Guess: ' +req.body.guessInput + " This is the current guess String: " + guess);
-    // console.log(guessString);
-    // console.log("your in post" +newWord);
+    else{
+      if(req.session.gameStatus == true){
+        res.redirect('/hangman/youlose');
+      }
+      else if (req.session.failed != false){
+        failedGuesses = failedGuesses + guess;
+      }
+    }
+    guessArr = data.lettToObj(guessString);
     res.redirect('/hangman');
   }
 });
 
+//Get page for losers
 app.get('/hangman/youlose', function(req, res){
-  res.render('youlose');
+  res.render('youlose',{stringArr: req.session.newWord.stringArr, failedGuess: guessArr.str,
+  guessesLeft: guessLeft});
 });
 
+//Post incase loser wants to play again.
 app.post('/hangman/youlose', function(req, res){
   req.session.destroy();
+  res.redirect('/');
+});
+
+//grab the you won mustache
+app.get('/hangman/youWon', function(req, res){
+  res.render('youWon', { stringArr: req.session.newWord.stringArr, failedGuess: guessArr.str,
+  guessesLeft: guessLeft});
+});
+
+//gets rid of last session and starts new one.
+app.post('/hangman/youWon', function(req, res){
   res.redirect('/');
 });
 
