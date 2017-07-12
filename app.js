@@ -114,6 +114,6 @@ app.post('/hangman/youWon', function(req, res){
   res.redirect('/');
 });
 
-app.listen(3000, function(req, res){
+app.listen(process.env.PORT || 3000, function(req, res){
   console.log('looks like you made it after all.');
 })
