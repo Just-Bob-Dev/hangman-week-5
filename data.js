@@ -1,5 +1,5 @@
 const fs = require('fs')
-var words = fs.readFileSync("./words").toLowerCase().split("\n");
+var words = fs.readFileSync("./words", "utf-8").toLowerCase().split("\n");
 
 
 //Turns a chosenWord into an array of letters and blank spaces
