@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const data = require('./data.js')
 var mustacheExpress = require('mustache-express');
-var words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
+var words = fs.readFileSync("./words").toLowerCase().split("\n");
 
 var app = express()
 //initializes session and makes it so it can be referenced later on in the .js file.
